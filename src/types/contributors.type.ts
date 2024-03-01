@@ -5,6 +5,13 @@ export interface IContributorsTotalCube {
   ['SnowContributions.count_contributors']: string;
 }
 
+export interface IContributorsTotalCubeNew {
+  ['SnowSubSegments.project_slug']: string;
+  ['SnowActivities.timestamp.year']: string;
+  ['SnowActivities.timestamp']: string;
+  ['SnowActivities.metric_contributors']: string;
+}
+
 export interface IContributorsTotalSf {
   YM: string;
   CONTRIBUTORS_COUNT: number;
