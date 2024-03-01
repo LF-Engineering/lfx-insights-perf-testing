@@ -1,16 +1,27 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "@routes/*": ["routes/*"],
-      "@common/*": ["common/*"],
-      "@keys/*": ["keys/*"],
-      "@json/*": ["json/*"],
-    },
-    "types": [
-      "node"
-    ],
-    "resolveJsonModule": true,
-    "esModuleInterop": true
+    "target": "es5",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "noEmit": true,
+    "allowJs": true,
+    "removeComments": false,
+
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false
   }
 }

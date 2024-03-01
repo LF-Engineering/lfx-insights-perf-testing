@@ -16,6 +16,9 @@ export const CONFIG = {
     AUTH: process.env.CUBE_AUTH
   },
   API: {
-    CONTRIBUTORS_COUNTERS: '/contributors_counters',
+    BASE_URL: 'http://localhost:3004/api',
+    ENDPOINTS: {
+      CONTRIBUTORS_COUNTERS: '/contributors_counters',
+    }
   },
 };

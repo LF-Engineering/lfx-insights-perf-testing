@@ -18,7 +18,7 @@ class CubeRouterClass {
   }
   private initRouter() {
     this.router = Router();
-    this.router.post(CONFIG.API.CONTRIBUTORS_COUNTERS, this.getContributorsCounters);
+    this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS, this.getContributorsCounters);
   }
   private getContributorsCounters = async (request: Request, response: Response, _next: NextFunction) => {
     try {

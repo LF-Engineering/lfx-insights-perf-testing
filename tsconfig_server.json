@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@routes/*": ["routes/*"]
+    },
+    "types": [
+      "node"
+    ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false
+  }
+}

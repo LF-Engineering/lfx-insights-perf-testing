@@ -10,3 +10,9 @@ export interface IContributorsTotalSf {
   CONTRIBUTORS_COUNT: number;
 }
 
+export interface IContributorsTotalParams {
+  granularity: string;
+  dateRange: [string, string];
+  project: string;
+}
+
