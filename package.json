@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npx ts-node -r tsconfig-paths/register --project tsconfig_server.json src/server.ts",
-    "start:env": "npx ts-node -r tsconfig-paths/register --project tsconfig_server.json -r dotenv/config src/server.ts",
+    "start": "npx ts-node -r tsconfig-paths/register --project tsconfig.json src/server.ts",
+    "start:env": "npx ts-node -r tsconfig-paths/register --project tsconfig.json -r dotenv/config src/server.ts",
     "build-k6": "webpack",
     "pretest": "yarn build-k6",
     "test": "k6 run dist/contributorsCountersCase1.load.spec.js"

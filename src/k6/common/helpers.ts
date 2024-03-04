@@ -15,7 +15,7 @@ export class Helpers {
       : [randomDate2.toISOString(), randomDate1.toISOString()];
   }
   static getMonthDiff(d1: Date, d2: Date): number {
-    let months;
+    let months: number;
     months = (d2.getFullYear() - d1.getFullYear()) * 12;
     months -= d1.getMonth();
     months += d2.getMonth();

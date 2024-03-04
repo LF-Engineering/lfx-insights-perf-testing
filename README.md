@@ -25,6 +25,7 @@ $ yarn install
 |    Param    | Obligatory | Default |
 |:-----------:|:----------:|:-------:|
 |  CUBE_AUTH  |    YES     |    -    |
+|  CUBE_URL   |    YES     |    -    |
 | SF_ACCOUNT  |    YES     |    -    |
 | SF_DB_NAME  |    YES     |    -    |
 |   SF_PASS   |    YES     |    -    |
