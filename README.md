@@ -104,7 +104,13 @@ k6 run dist/contributorsCountersCase2.load.spec.js
 k6 run dist/contributorsCountersCase3.load.spec.js
 ```
 
-`k6 login cloud --token <YOUR_API_AUTH_TOKEN>`
+SnowFlake test set:
+
+```
+k6 run dist/contributorsCountersSfCase1.load.spec.js
+k6 run dist/contributorsCountersSfCase2.load.spec.js
+k6 run dist/contributorsCountersSfCase3.load.spec.js
+```
 
 ### Run K6 test locally with streaming result to `cloud`
 `https://k6.io/docs/results-output/real-time/cloud/`
