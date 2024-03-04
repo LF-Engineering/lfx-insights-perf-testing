@@ -12,7 +12,7 @@ export const CONFIG = {
     }
   },
   CUBE: {
-    URL: 'https://plum-stoat.aws-us-west-2-t-11709.cubecloudapp.dev/cubejs-api/v1',
+    URL:  process.env.CUBE_URL,
     AUTH: process.env.CUBE_AUTH
   },
   API: {

@@ -5,7 +5,9 @@
   "scripts": {
     "start": "npx ts-node -r tsconfig-paths/register --project tsconfig_server.json src/server.ts",
     "start:env": "npx ts-node -r tsconfig-paths/register --project tsconfig_server.json -r dotenv/config src/server.ts",
-    "build-k6": "webpack"
+    "build-k6": "webpack",
+    "pretest": "yarn build-k6",
+    "test": "k6 run dist/contributorsCountersCase1.load.spec.js"
   },
   "keywords": [],
   "author": "",
