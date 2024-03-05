@@ -26,7 +26,7 @@ export default function () {
           '2014-01-01T00:00:00.000',
           '2024-12-31T23:59:59.999'
         ],
-        project: projectSlugCase[9]
+        project: projectSlugCase[8]
       } as any);
       check(response, {
         "Should have code status 200": res => res.status === 200,

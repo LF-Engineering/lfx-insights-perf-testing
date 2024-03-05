@@ -21,7 +21,7 @@ export default function () {
     req duration ${thresholdsLoadBulk.http_req_duration[0]}
     `,
     () => {
-      const randomDateRange = Helpers.getRandomDateRange(new Date('2014-01-01T00:00:00.000'), new Date('2024-12-31T23:59:59.999'));
+      const randomDateRange = Helpers.getRandomDateRange(new Date('2014-01-01T00:00:00.000'), new Date());
       const granularity = Helpers.getGranularity(new Date(randomDateRange[0]), new Date(randomDateRange[1]));
       const response = http.post(`http://localhost:3004/api/sf/contributors_counters`, {
         granularity,
