@@ -5,6 +5,7 @@ import { createServer, Server } from 'http';
 import logger from 'morgan';
 import { cubeRouter } from '@routes/CubeRouter';
 import { sfRouter } from '@routes/SnowFlakeRouter';
+import { dummyRouter } from '@routes/DummyRouter';
 
 export class MockApiServer {
   public static readonly DELAYMS: number = 0;
@@ -60,5 +61,6 @@ export class MockApiServer {
   private restRoutes() {
     this.app.use('/api/cube/', cubeRouter.router);
     this.app.use('/api/sf/', sfRouter.router);
+    this.app.use('/api/dummy/', dummyRouter.router);
   }
 }

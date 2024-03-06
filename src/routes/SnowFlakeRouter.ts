@@ -21,9 +21,31 @@ class SnowFlakeRouterClass {
   }
   private routerInit() {
     this.router = Router();
-    this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS, this.getContributorsCounters);
+    this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS, this.getContributorsCountersDirect);
+    this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS_POOL, this.getContributorsCountersPool);
   }
-  private getContributorsCounters = async (request: Request, response: Response, _next: NextFunction) => {
+  private getContributorsCountersPool = async (request: Request, response: Response, _next: NextFunction) => {
+    const {project, granularity, dateRange} = request.body;
+    const query = SfQuery.contributorsCounters(project, granularity, dateRange);
+    await this.sf.showFlakePoolConnection.use(async (clientConnection) => {
+      const statement = await clientConnection.execute({
+        sqlText: query,
+        complete: (err, stmt, _rows) => {
+          if (err) return response.status(400).send(err);
+          const stream = stmt.streamRows();
+          const res: IContributorsTotalSf[] = [];
+          stream.on('data', (row: IContributorsTotalSf) => {
+            res.push(row);
+          });
+          stream.on('end', () => {
+            return response.status(200).send(res);
+          });
+        }
+      })
+    });
+  };
+
+  private getContributorsCountersDirect = async (request: Request, response: Response, _next: NextFunction) => {
     const {project, granularity, dateRange} = request.body;
     const query = SfQuery.contributorsCounters(project, granularity, dateRange);
     this.sf.showFlakeConnection.execute({

@@ -23,7 +23,7 @@ export default function () {
     () => {
       const randomDateRange = Helpers.getRandomDateRange(new Date('2014-01-01T00:00:00.000'), new Date());
       const granularity = Helpers.getGranularity(new Date(randomDateRange[0]), new Date(randomDateRange[1]));
-      const response = http.post(`http://localhost:3004/api/sf/contributors_counters`, {
+      const response = http.post(`http://localhost:3004/api/sf/contributors_counters_pool`, {
         granularity,
         dateRange: randomDateRange,
         project: Helpers.getRandomElFromArray(projectSlugCase)
