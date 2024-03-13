@@ -22,14 +22,15 @@ $ yarn install
 
 ### Setup env
 
-|    Param    | Obligatory | Default |
-|:-----------:|:----------:|:-------:|
-|  CUBE_AUTH  |    YES     |    -    |
-|  CUBE_URL   |    YES     |    -    |
-| SF_ACCOUNT  |    YES     |    -    |
-| SF_DB_NAME  |    YES     |    -    |
-|   SF_PASS   |    YES     |    -    |
-| SF_USERNAME |    YES     |    -    |
+|    Param     | Obligatory | Default |
+|:------------:|:----------:|:-------:|
+|  CUBE_AUTH   |    YES     |    -    |
+|   CUBE_URL   |    YES     |    -    |
+|  SF_ACCOUNT  |    YES     |    -    |
+|  SF_DB_NAME  |    YES     |    -    |
+|   SF_PASS    |    YES     |    -    |
+| SF_USERNAME  |    YES     |    -    |
+| SF_WAREHOUSE |    YES     |    -    |
 
 ### Run Test server
 be sure you assigned env vars correct in prev stage

@@ -5,6 +5,7 @@ export const CONFIG = {
       username: process.env.SF_USERNAME,
       password: process.env.SF_PASS,
       database: process.env.SF_DB_NAME,
+      warehouse: process.env.SF_WAREHOUSE,
       keepAlive: true,
       timeout: 5 * 60 * 1000
     },
