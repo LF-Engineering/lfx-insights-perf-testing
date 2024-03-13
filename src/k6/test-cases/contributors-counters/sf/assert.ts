@@ -1,4 +1,4 @@
-import { IContributorsTotalSf } from '../../../types/contributors.type';
+import { IContributorsTotalSf } from '../../../../types/contributors.type';
 import { RefinedResponse } from 'k6/http';
 
 export const contributorsCountersSfAssert = (res: RefinedResponse<any>): boolean => {

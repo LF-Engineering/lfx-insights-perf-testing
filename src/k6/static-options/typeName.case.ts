@@ -1,0 +1,1 @@
+export const typeNameOptions: string[] = ['changeset-abandoned', 'changeset-created', 'changeset-merged', 'commits', 'contributions', 'gerrit_comments', 'issues-closed', 'issues-opened', 'pr_comments', 'pull_request-closed', 'pull_request-merged', 'pull_request-opened', 'pull_request-reviewed']

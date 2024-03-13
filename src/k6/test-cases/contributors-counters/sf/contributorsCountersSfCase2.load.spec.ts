@@ -1,11 +1,11 @@
 import { check, group } from 'k6';
 import { Options } from 'k6/options';
 import http from 'k6/http';
-import { thresholdsLoadBulk } from '../../common/thresholds';
-import { load } from '../../common/stages';
-import { projectSlugCase } from '../../common/projectSlug.case';
-import { Helpers } from '../../common/helpers';
+import { thresholdsLoadBulk } from '../../../common/thresholds';
+import { load } from '../../../common/stages';
+import { Helpers } from '../../../common/helpers';
 import { contributorsCountersSfAssert } from './assert';
+import { projectSlugOptions } from '../../../static-options/projectSlug.case';
 
 export let options: Options = {
   stages: load,
@@ -27,7 +27,7 @@ export default function () {
           '2014-01-01T00:00:00.000',
           '2024-12-31T23:59:59.999'
         ],
-        project: Helpers.getRandomElFromArray(projectSlugCase)
+        project: Helpers.getRandomElFromArray(projectSlugOptions)
       } as any);
       check(response, {
         "Should have code status 200": res => res.status === 200,

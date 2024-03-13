@@ -23,6 +23,8 @@ export const CONFIG = {
     ENDPOINTS: {
       CONTRIBUTORS_COUNTERS: '/contributors_counters',
       CONTRIBUTORS_COUNTERS_POOL: '/contributors_counters_pool',
+      TYPE_BUS_FACTOR: '/type_bus_factor',
+      TYPE_BUS_FACTOR_POOL: '/type_bus_factor_pool',
     }
   },
 };

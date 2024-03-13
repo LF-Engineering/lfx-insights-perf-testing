@@ -1,5 +1,5 @@
 import { SerializedResult } from '@cubejs-client/core';
-import { IContributorsTotalCube, IContributorsTotalCubeNew } from '../../../types/contributors.type';
+import { IContributorsTotalCube, IContributorsTotalCubeNew } from '../../../../types/contributors.type';
 import { RefinedResponse } from 'k6/http';
 
 export const contributorsCountersAssert = (res: RefinedResponse<any>): boolean => {

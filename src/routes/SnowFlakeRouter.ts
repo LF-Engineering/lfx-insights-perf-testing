@@ -3,6 +3,7 @@ import { ConnectionOptions } from 'snowflake-sdk';
 import { SnowFlakeClass } from '../sf/sf';
 import { SfQuery } from '../sf/sf.query';
 import { IContributorsTotalSf } from '../types/contributors.type';
+import { ITypeBusFactorParams, ITypeBusFactorSf } from '../types/typeBusFactor.type';
 
 import { CONFIG } from '../config';
 
@@ -23,6 +24,8 @@ class SnowFlakeRouterClass {
     this.router = Router();
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS, this.getContributorsCountersDirect);
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS_POOL, this.getContributorsCountersPool);
+    this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR, this.getTypeBusFactorDirect);
+    this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR_POOL, this.getTypeBusFactorPool);
   }
   private getContributorsCountersPool = async (request: Request, response: Response, _next: NextFunction) => {
     const {project, granularity, dateRange} = request.body;
@@ -54,6 +57,42 @@ class SnowFlakeRouterClass {
         return response.status(err ? 400 : 200).send(err || rows);
       }
     });
+  };
+
+  private getTypeBusFactorPool = async (request: Request, response: Response, _next: NextFunction) => {
+    const {project, timeRangeName, type} = request.body as ITypeBusFactorParams;
+    const query = SfQuery.typeBusFactor(project, timeRangeName, type);
+    await this.sf.showFlakePoolConnection.use(async (clientConnection) => {
+      const statement = await clientConnection.execute({
+        sqlText: query,
+        complete: (err, stmt, _rows) => {
+          if (err) return response.status(400).send(err);
+          const stream = stmt.streamRows();
+          const res: ITypeBusFactorSf[] = [];
+          stream.on('data', (row: ITypeBusFactorSf) => {
+            res.push(row);
+          });
+          stream.on('end', () => {
+            return response.status(200).send(res);
+          });
+        }
+      })
+    });
+  };
+
+  private getTypeBusFactorDirect = async (request: Request, response: Response, _next: NextFunction) => {
+    try {
+      const {project, timeRangeName, type} = request.body as ITypeBusFactorParams;
+      const query = SfQuery.typeBusFactor(project, timeRangeName, type);
+      this.sf.showFlakeConnection.execute({
+        sqlText: query,
+        complete: function(err, _stmt, rows: ITypeBusFactorSf[] | undefined) {
+          return response.status(err ? 400 : 200).send(err || rows);
+        }
+      });
+    } catch (e) {
+      return response.status(400).send(e);
+    }
   };
 }
 

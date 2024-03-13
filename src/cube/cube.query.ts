@@ -1,4 +1,5 @@
 import { Query, TimeDimensionGranularity } from '@cubejs-client/core';
+import { ITypeBusFactorTimeRangeName, ITypeBusFactorType } from '../types/typeBusFactor.type';
 
 export class CubeQuery {
   static contributorsCounters(project: string, granularity: TimeDimensionGranularity, dateRange: [string, string]): Query {
@@ -37,6 +38,49 @@ export class CubeQuery {
         },
         {
           member: 'SnowMembers.is_bot', operator: 'equals', values: ['false']
+        }
+      ]
+    }
+  }
+  static typeBusFactor(project: string, timeRangeName: ITypeBusFactorTimeRangeName, type: ITypeBusFactorType): Query {
+    return {
+      dimensions: [
+        'SnowTypeBusFactorView.rank',
+        'SnowTypeBusFactorView.username',
+        'SnowTypeBusFactorView.display_name',
+        'SnowTypeBusFactorView.logo_url',
+        'SnowTypeBusFactorView.contributions',
+        'SnowTypeBusFactorView.percent_contributions',
+        'SnowTypeBusFactorView.cumulative_percent_contributions'
+      ],
+      filters: [
+        {
+          member: 'SnowTypeBusFactorView.time_range_name',
+          operator: 'equals',
+          values: [
+            timeRangeName
+          ]
+        },
+        {
+          member: 'SnowTypeBusFactorView.type',
+          operator: 'equals',
+          values: [
+            type
+          ]
+        },
+        {
+          member: 'SnowTypeBusFactorView.repository_url',
+          operator: 'equals',
+          values: [
+            'all-repos-combined'
+          ]
+        },
+        {
+          member: 'SnowTypeBusFactorView.subproject_slug',
+          operator: 'equals',
+          values: [
+            project
+          ]
         }
       ]
     }

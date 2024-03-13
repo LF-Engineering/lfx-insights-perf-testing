@@ -1,11 +1,11 @@
 import { check, group } from 'k6';
 import { Options } from 'k6/options';
 import http from 'k6/http';
-import { thresholdsLoadBulk } from '../../common/thresholds';
-import { load } from '../../common/stages';
-import { projectSlugCase } from '../../common/projectSlug.case';
-import { Helpers } from '../../common/helpers';
+import { thresholdsLoadBulk } from '../../../common/thresholds';
+import { load } from '../../../common/stages';
+import { Helpers } from '../../../common/helpers';
 import { contributorsCountersSfAssert } from './assert';
+import { projectSlugOptions } from '../../../static-options/projectSlug.case';
 
 export let options: Options = {
   stages: load,
@@ -26,7 +26,7 @@ export default function () {
       const response = http.post(`http://localhost:3004/api/sf/contributors_counters_pool`, {
         granularity,
         dateRange: randomDateRange,
-        project: Helpers.getRandomElFromArray(projectSlugCase)
+        project: Helpers.getRandomElFromArray(projectSlugOptions)
       } as any);
       check(response, {
         "Should have code status 200": res => res.status === 200,

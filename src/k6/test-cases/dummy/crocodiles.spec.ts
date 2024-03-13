@@ -1,9 +1,9 @@
 import { check, group } from 'k6';
 import { Options } from 'k6/options';
 import http from 'k6/http';
-import { thresholdsLoadSingle } from '../common/thresholds';
-import { load } from '../common/stages';
-import { todosAssert } from './assert';
+import { thresholdsLoadSingle } from '../../common/thresholds';
+import { load } from '../../common/stages';
+import { crocodilesAssert } from './assert';
 
 export let options: Options = {
   stages: load,
@@ -19,10 +19,10 @@ export default function () {
     req duration ${thresholdsLoadSingle.http_req_duration[0]}
     `,
     () => {
-      const response = http.get(`http://localhost:3004/api/dummy/todos`);
+      const response = http.get(`http://localhost:3004/api/dummy/crocodiles`);
       check(response, {
         "Should have code status 200": res => res.status === 200,
-        "Should contain data": todosAssert
+        "Should contain data": crocodilesAssert
       });
     }
   );
