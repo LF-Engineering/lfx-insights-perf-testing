@@ -29,7 +29,7 @@ select
   project_slug,
   project_group_slug
 from
-  analytics.platinum_insights.contributor_leaderboard
+  {{db-schema}}platinum_insights.contributor_leaderboard
 where
   repository_url = ?
   and time_range_name = ?

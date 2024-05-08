@@ -1,5 +1,6 @@
 import { ITimeRangeName } from '../types/timeRanges.type';
 import { IActivityType } from '../types/activityTypes.type';
+import { IDeveloperMode } from '../types/developerMode.type';
 
 export interface IContributorLeaderboard {
   TIME_RANGE_NAME: string;
@@ -44,6 +45,7 @@ export interface IContributorLeaderboardParams {
   asc: boolean;
   limit: number;
   offset: number;
+  developerMode: IDeveloperMode;
 }
 
 export type IContributorLeaderboardOrderColumns = 'is_bot' | 'segment_id' | 'repository_url' | 'member_id' | 'platform' | 'username' | 'row_number' | 'contributions' | 'prev_contributions' | 'percent_total' | 'change_from_previous' | 'delta_contributions' | 'joined_at' | 'display_name' | 'logo_url' | 'country' | 'subproject_slug' | 'project_slug' | 'project_group_slug'

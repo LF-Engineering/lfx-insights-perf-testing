@@ -4,7 +4,8 @@ import { SnowFlakeClass } from '../sf/sf';
 import { SfQuery } from '../sf/sf.query';
 import { IContributorsTotalSf } from '../types/contributors.type';
 import { ITypeBusFactorParams, ITypeBusFactorSf } from '../types/typeBusFactor.type';
-import { IContributorLeaderboardParams, IContributorLeaderboard, IContributorLeaderboardOrderColumns, ContributorLeaderboardOrderColumns } from '../types/contributorLeaderboard.type';
+import { IContributorLeaderboardParams, IContributorLeaderboard, ContributorLeaderboardOrderColumns } from '../types/contributorLeaderboard.type';
+import { DeveloperMode } from '../types/developerMode.type';
 
 import { CONFIG } from '../config';
 
@@ -114,7 +115,7 @@ class SnowFlakeRouterClass {
   }
 
   private getContributorLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
-    const {segmentId, project, repository, timeRangeName, activityType, filterBots, orderBy, asc, limit, offset} = request.body as IContributorLeaderboardParams;
+    const {segmentId, project, repository, timeRangeName, activityType, filterBots, orderBy, asc, limit, offset, developerMode} = request.body as IContributorLeaderboardParams;
     var repo = repository;
     if (repo == "") {
       repo = "all-repos-combined";
@@ -151,6 +152,19 @@ class SnowFlakeRouterClass {
     query += " limit ? offset ?";
     binds.push(lim)
     binds.push(off);
+    var dev = developerMode as string;
+    var devMode = this.isSet(dev);
+    var devModeAllowed = DeveloperMode.has(dev)
+    if (devMode && devModeAllowed) {
+      console.log('using developer ' + dev + ' models');
+      dev = "analytics_dev." + dev + "_"
+    } else {
+      if (devMode && !devModeAllowed) {
+        console.log('developer ' + dev + ' is not allowed, using analytics database (system wide) instead');
+      }
+      dev = "analytics."
+    }
+    query = query.split('{{db-schema}}').join(dev);
     this.sf.showFlakeConnection.execute({
       sqlText: query,
       binds: binds,
