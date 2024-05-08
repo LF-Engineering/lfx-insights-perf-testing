@@ -164,6 +164,14 @@ k6 cloud dist/contributorsCountersSfCase2.load.spec.js
 k6 cloud dist/contributorsCountersSfCase3.load.spec.js
 ```
 
+
+# Snowflake APIs development.
+
+- Provide values for `*.secret` files needed by `scripts/server.sh`.
+- Start server via: `` ./scripts/server.sh ``.
+- Call example API via: `` ./scripts/api-contributor_leaderboard.sh ``.
+
+
 ### License
 
 This project’s source code is licensed under the MIT License. A copy of the license is available in [LICENSE](https://github.com/LF-Engineering/lfx-insights-ui/blob/main/LICENSE).

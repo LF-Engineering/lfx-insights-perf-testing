@@ -1,6 +1,18 @@
-import { ITypeBusFactorTimeRangeName, ITypeBusFactorType } from '../types/typeBusFactor.type';
+import { ITimeRangeName } from '../types/timeRanges.type';
+import { IActivityType } from '../types/activityTypes.type';
+var fs = require('fs');
 
 export class SfQuery {
+
+  // Returned query has '?' parameters that must be bind to actual values
+  static getQuery(queriesMap: Map<string, string>, queryFileName: string): string {
+    if (!queriesMap.has(queryFileName)) {
+      console.log('reading (only once) ' + queryFileName);
+      queriesMap.set(queryFileName, fs.readFileSync(queryFileName).toString());
+    }
+    return queriesMap.get(queryFileName);
+  }
+
   static contributorsCounters(project: string, granularity: string, dateRange: [string, string]): string {
     return `
         select 
@@ -14,7 +26,7 @@ export class SfQuery {
           group by ALL order by 1
       `
   }
-  static typeBusFactor(project: string, timeRangeName: ITypeBusFactorTimeRangeName, type: ITypeBusFactorType): string {
+  static typeBusFactor(project: string, timeRangeName: ITimeRangeName, type: IActivityType): string {
     return `
         select
           row_number,

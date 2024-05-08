@@ -25,6 +25,8 @@ export const CONFIG = {
       CONTRIBUTORS_COUNTERS_POOL: '/contributors_counters_pool',
       TYPE_BUS_FACTOR: '/type_bus_factor',
       TYPE_BUS_FACTOR_POOL: '/type_bus_factor_pool',
+      // TODO: add real SF API candidates (to be moved to a swagger repo) starting here:
+      CONTRIBUTOR_LEADERBOARD: '/contributor_leaderboard',
     }
   },
 };

@@ -1,5 +1,6 @@
 import { Query, TimeDimensionGranularity } from '@cubejs-client/core';
-import { ITypeBusFactorTimeRangeName, ITypeBusFactorType } from '../types/typeBusFactor.type';
+import { ITimeRangeName } from '../types/timeRanges.type';
+import { IActivityType } from '../types/activityTypes.type';
 
 export class CubeQuery {
   static contributorsCounters(project: string, granularity: TimeDimensionGranularity, dateRange: [string, string]): Query {
@@ -42,7 +43,7 @@ export class CubeQuery {
       ]
     }
   }
-  static typeBusFactor(project: string, timeRangeName: ITypeBusFactorTimeRangeName, type: ITypeBusFactorType): Query {
+  static typeBusFactor(project: string, timeRangeName: ITimeRangeName, type: IActivityType): Query {
     return {
       dimensions: [
         'SnowTypeBusFactorView.rank',

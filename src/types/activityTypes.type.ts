@@ -1,0 +1,1 @@
+export type IActivityType = 'changeset-abandoned' | 'changeset-created' | 'changeset-merged' | 'changeset-reviews' | 'commits' | 'contributions' | 'gerrit_comments' | 'issues-closed' | 'issues-opened' | 'pr_comments' | 'pull_request-closed' | 'pull_request-merged' | 'pull_request-opened' | 'pull_request-reviewed';
