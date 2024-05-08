@@ -2,7 +2,7 @@ select
   date_trunc(?, ymd) as YM,
   count (distinct contributors) as contributors_count
 from
-  analytics.platinum_insights.contributor_counts
+  {{db-schema}}platinum_insights.contributor_counts
 where
   repository_url = ?
   and is_bot = ? 

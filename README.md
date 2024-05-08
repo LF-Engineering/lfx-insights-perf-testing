@@ -168,8 +168,9 @@ k6 cloud dist/contributorsCountersSfCase3.load.spec.js
 # Snowflake APIs development.
 
 - Provide values for `*.secret` files needed by `scripts/server.sh`.
-- Start server via: `` ./scripts/server.sh ``.
+- Start server via: `` ./scripts/server.sh ``. Or manually changing to another developer (othe rthan define din `*.secret files): `` SF_USERNAME=lf_lukasz SF_PASS=[redacted] SF_WAREHOUSE=DBT_INSIGHTS_DEV ./scripts/server.sh ``.
 - Call example API via: `` ./scripts/api-contributor_leaderboard.sh ``.
+- Call example API via: `` ./scripts/api-contributors_counters.sh ``.
 
 
 ### License
