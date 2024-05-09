@@ -26,7 +26,8 @@ export const CONFIG = {
       TYPE_BUS_FACTOR: '/type_bus_factor',
       TYPE_BUS_FACTOR_POOL: '/type_bus_factor_pool',
       // TODO: add real SF API candidates (to be moved to a swagger repo) starting here:
-      CONTRIBUTOR_LEADERBOARD: '/contributor_leaderboard',
+      CONTRIBUTOR_LEADERBOARD: '/contributor-leaderboard',
+      ORGANIZATION_LEADERBOARD: '/organization-leaderboard',
     }
   },
 };

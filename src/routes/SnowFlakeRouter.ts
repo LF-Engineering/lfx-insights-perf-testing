@@ -4,7 +4,8 @@ import { SnowFlakeClass } from '../sf/sf';
 import { SfQuery } from '../sf/sf.query';
 import { IContributorsTotalSf } from '../types/contributors.type';
 import { ITypeBusFactorParams, ITypeBusFactorSf } from '../types/typeBusFactor.type';
-import { IContributorLeaderboardParams, IContributorLeaderboard, ContributorLeaderboardOrderColumns } from '../types/contributorLeaderboard.type';
+import { IContributorLeaderboardParams, ContributorLeaderboardOrderColumns } from '../types/contributorLeaderboard.type';
+import { IOrganizationLeaderboardParams, OrganizationLeaderboardOrderColumns } from '../types/organizationLeaderboard.type';
 import { DeveloperMode, IDeveloperMode } from '../types/developerMode.type';
 import { createHash } from 'node:crypto'
 
@@ -35,6 +36,7 @@ class SnowFlakeRouterClass {
     this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR, this.getTypeBusFactorDirect);
     this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR_POOL, this.getTypeBusFactorPool);
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTOR_LEADERBOARD, this.getContributorLeaderboard);
+    this.router.post(CONFIG.API.ENDPOINTS.ORGANIZATION_LEADERBOARD, this.getOrganizationLeaderboard);
   }
 
   // TODO: This holds mapping of query file name (read once) to '?' parametrized query strings used by APIs
@@ -165,8 +167,9 @@ class SnowFlakeRouterClass {
       this.sf.showFlakeConnection.execute({
         sqlText: query,
         binds: binds,
-        // rows: IContributorLeaderboard[] | undefined
-        complete: function(err, _stmt, rows) {
+        complete: function(err, stmt, rows) {
+          console.log('exectued with bound parameters: ' + binds);
+          console.log(stmt.getSqlText());
           if (err) {
             console.log('query ' + key + ' status is error - not storing in cache');
           } else {
@@ -186,7 +189,7 @@ class SnowFlakeRouterClass {
     }
     var order = orderBy;
     if (!ContributorLeaderboardOrderColumns.has(order)) {
-      order = "row_number";
+      order = 'row_number';
       console.log('unknown order by column ' + orderBy + ', changed to ' + order);
     }
     var lim = limit;
@@ -197,8 +200,49 @@ class SnowFlakeRouterClass {
     if (off < 0) {
       off = 0;
     }
-    var binds = [repo, timeRangeName, activityType, filterBots];
+    var binds:(string | number)[] = [repo, timeRangeName, activityType, filterBots];
     var query = SfQuery.getQuery(this.queriesMap, './src/sql/contributorLeaderboard.sql');
+    if (this.isSet(segmentId)) {
+      query += ' and segment_id = ?'
+      binds.push(segmentId);
+    }
+    if (this.isSet(project)) {
+      query += ' and project_slug = ?'
+      binds.push(project);
+    }
+    query += ' order by ' + order
+    if (asc) {
+      query += " asc";
+    } else {
+      query += " desc";
+    }
+    query += " limit ? offset ?";
+    binds.push(lim)
+    binds.push(off);
+    this.runQuery(query, binds, developerMode, response);
+  };
+
+  private getOrganizationLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
+    const {segmentId, project, repository, timeRangeName, activityType, orderBy, asc, limit, offset, developerMode} = request.body as IOrganizationLeaderboardParams;
+    var repo = repository;
+    if (repo == "") {
+      repo = "all-repos-combined";
+    }
+    var order = orderBy;
+    if (!OrganizationLeaderboardOrderColumns.has(order)) {
+      order = 'row_number_by_contributions';
+      console.log('unknown order by column ' + orderBy + ', changed to ' + order);
+    }
+    var lim = limit;
+    if (lim <= 0) {
+      lim = 1000;
+    }
+    var off = offset;
+    if (off < 0) {
+      off = 0;
+    }
+    var binds:(string | number)[] = [repo, timeRangeName, activityType];
+    var query = SfQuery.getQuery(this.queriesMap, './src/sql/organizationLeaderboard.sql');
     if (this.isSet(segmentId)) {
       query += ' and segment_id = ?'
       binds.push(segmentId);
