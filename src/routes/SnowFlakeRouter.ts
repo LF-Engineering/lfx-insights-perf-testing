@@ -37,6 +37,7 @@ class SnowFlakeRouterClass {
     this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR_POOL, this.getTypeBusFactorPool);
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTOR_LEADERBOARD, this.getContributorLeaderboard);
     this.router.post(CONFIG.API.ENDPOINTS.ORGANIZATION_LEADERBOARD, this.getOrganizationLeaderboard);
+    this.router.get(CONFIG.API.ENDPOINTS.CACHE_STATS, this.cacheStats);
   }
 
   // TODO: This holds mapping of query file name (read once) to '?' parametrized query strings used by APIs
@@ -262,6 +263,34 @@ class SnowFlakeRouterClass {
     binds.push(off);
     this.runQuery(query, binds, developerMode, response);
   };
+
+  private cacheStats = async (request: Request, response: Response, _next: NextFunction) => {
+    var str : string = 'cache TTL: ' + this.CacheTTL + 's';
+    str += ', mapped SQL files: ' + this.queriesMap.size + "\n";
+    var i = 0;
+    for (let data of this.queriesMap) {
+      i++;
+      str += i + ") '" + data[0] + "' length= " + data[1].length + ":\n";
+      str += data[1] + "\n";
+    }
+    str += 'cached SQL queries: ' + this.queriesResultCache.size + "\n";
+    for (let data of this.queriesResultCache) {
+      i++;
+      str += i + ") query sha256 hash as base64 '" + data[0] + "':";
+      const entry = data[1];
+      const ageSeconds = (Date.now() - entry[0]) / 1000;
+      const remain = this.CacheTTL - ageSeconds;
+      str += ' age ' + ageSeconds + 's'
+      if (remain > 0) {
+        str += ', expires in ' + remain + "s:\n";
+      } else {
+        str += ', expired ' + -remain + "s:\n";
+      }
+      str += JSON.stringify(entry[1]) + "\n";
+    }
+    console.log(str);
+    response.status(200).send({"status": "ok", "info": str});
+  }
 }
 
 export const sfRouter = new SnowFlakeRouterClass();

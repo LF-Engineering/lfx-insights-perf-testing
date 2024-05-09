@@ -28,6 +28,7 @@ export const CONFIG = {
       // TODO: add real SF API candidates (to be moved to a swagger repo) starting here:
       CONTRIBUTOR_LEADERBOARD: '/contributor-leaderboard',
       ORGANIZATION_LEADERBOARD: '/organization-leaderboard',
+      CACHE_STATS: '/cache-stats',
     }
   },
 };

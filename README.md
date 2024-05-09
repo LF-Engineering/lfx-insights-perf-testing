@@ -172,6 +172,7 @@ k6 cloud dist/contributorsCountersSfCase3.load.spec.js
 - Call example API via: `` ./scripts/api-contributors_counters.sh ``.
 - Call example API via: `` ./scripts/api-contributor-leaderboard.sh ``.
 - Call example API via: `` ./scripts/api-organization-leaderboard.sh ``.
+- Call example API via: `` ./scripts/api-cache-stats.sh ``.
 
 
 ### License
