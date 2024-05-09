@@ -1,3 +1,6 @@
+import { ITimeRangeName } from '@type/timeRanges.type';
+import { IActivityType } from '@type/activityTypes.type';
+
 export interface ITypeBusFactorSf {
   ROW_NUMBER: number;
   USERNAME: string;

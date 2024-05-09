@@ -1,6 +1,6 @@
-import { BasicClass } from '../core/BasicClass';
 import cube, { CubejsApi, Query, ResultSet } from '@cubejs-client/core';
 import axios, { AxiosResponse } from 'axios';
+import { BasicClass } from '@core/BasicClass';
 
 export class CubeClass extends BasicClass {
   private url: string;

@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { ResultSet } from '@cubejs-client/core';
-import { CubeClass } from '../cube/Cube';
-import { CubeQuery } from '../cube/cube.query';
-import { IContributorsTotalCube } from '../types/contributors.type';
-import { ITypeBusFactorParams } from '../types/typeBusFactor.type';
+import { CubeClass } from '@cube/Cube';
+import { CubeQuery } from '@cube/cube.query';
+import { IContributorsTotalCube } from '@type/contributors.type';
+import { ITypeBusFactorParams } from '@type/typeBusFactor.type';
 
-import { CONFIG } from '../config';
+import { CONFIG } from '@root/config';
 
 class CubeRouterClass {
   public router: Router;

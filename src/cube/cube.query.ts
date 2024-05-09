@@ -1,6 +1,6 @@
 import { Query, TimeDimensionGranularity } from '@cubejs-client/core';
-import { ITimeRangeName } from '../types/timeRanges.type';
-import { IActivityType } from '../types/activityTypes.type';
+import { ITimeRangeName } from '@type/timeRanges.type';
+import { IActivityType } from '@type/activityTypes.type';
 
 export class CubeQuery {
   static contributorsCounters(project: string, granularity: TimeDimensionGranularity, dateRange: [string, string]): Query {

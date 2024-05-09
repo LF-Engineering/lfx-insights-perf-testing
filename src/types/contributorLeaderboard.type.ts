@@ -1,6 +1,6 @@
-import { ITimeRangeName } from '../types/timeRanges.type';
-import { IActivityType } from '../types/activityTypes.type';
-import { IDeveloperMode } from '../types/developerMode.type';
+import { ITimeRangeName } from '@type/timeRanges.type';
+import { IActivityType } from '@type/activityTypes.type';
+import { IDeveloperMode } from '@type/developerMode.type';
 
 export interface IContributorLeaderboard {
   TIME_RANGE_NAME: string;
