@@ -5,7 +5,8 @@ import { SfQuery } from '../sf/sf.query';
 import { IContributorsTotalSf } from '../types/contributors.type';
 import { ITypeBusFactorParams, ITypeBusFactorSf } from '../types/typeBusFactor.type';
 import { IContributorLeaderboardParams, IContributorLeaderboard, ContributorLeaderboardOrderColumns } from '../types/contributorLeaderboard.type';
-import { DeveloperMode } from '../types/developerMode.type';
+import { DeveloperMode, IDeveloperMode } from '../types/developerMode.type';
+import { createHash } from 'node:crypto'
 
 import { CONFIG } from '../config';
 
@@ -14,6 +15,8 @@ class SnowFlakeRouterClass {
   private sf: SnowFlakeClass;
   // TODO: Alex pls see 'statementsInit' function TODO:
   private queriesMap: Map<string, string>;
+  private queriesResultCache: Map<string, [number, any]>;
+  private CacheTTL: number;
   constructor() {
     this.sfInit();
     this.routerInit();
@@ -33,13 +36,19 @@ class SnowFlakeRouterClass {
     this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR_POOL, this.getTypeBusFactorPool);
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTOR_LEADERBOARD, this.getContributorLeaderboard);
   }
+
   // TODO: This holds mapping of query file name (read once) to '?' parametrized query strings used by APIs
   // We do this by adding `binds` property to SQL 'execute' method
   // Each API will read such '?' parametrized queries and then execute them binding parameters provided as API params
   // We need to have similar logic in swagger - cc Alex
+  // This also uses query results caching (can be replaced with REDIS or whatever else more fancy caching)
+  // Idea is to calculate hash of query and its parameters and store this in memory for re-use with some TTL
   private statementsInit() {
     this.queriesMap = new Map();
+    this.queriesResultCache = new Map();
+    this.CacheTTL = 28800; // 8 hours
   }
+
   private getContributorsCountersPool = async (request: Request, response: Response, _next: NextFunction) => {
     const {project, granularity, dateRange} = request.body;
     const query = SfQuery.getQuery(this.queriesMap, './src/sql/contributorsCounters.sql');
@@ -114,6 +123,61 @@ class SnowFlakeRouterClass {
     return !(v === undefined || v === null || v == '');
   }
 
+  private sha(str: string) : string {
+    return createHash('sha256').update(str).digest('base64');
+  }
+
+  private runQuery(query: string, binds: any, developerMode: IDeveloperMode, response: Response) {
+    // Developer mode
+    var dev = developerMode as string;
+    var devMode = this.isSet(dev);
+    var devModeAllowed = DeveloperMode.has(dev)
+    if (devMode && devModeAllowed) {
+      console.log('using developer ' + dev + ' models');
+      dev = "analytics_dev." + dev + "_"
+    } else {
+      if (devMode && !devModeAllowed) {
+        console.log('developer ' + dev + ' is not allowed, using analytics database (system wide) instead');
+      }
+      dev = "analytics."
+    }
+    query = query.split('{{db-schema}}').join(dev);
+    // Caching
+    const key = this.sha(JSON.stringify({"q":query, "b":binds}));
+    var updateCache = false;
+    if (!this.queriesResultCache.has(key)) {
+      console.log('first time executing query with key ' + key);
+      updateCache = true;
+    } else {
+      const entry = this.queriesResultCache.get(key);
+      const ageSeconds = (Date.now() - entry[0]) / 1000;
+      if (ageSeconds > this.CacheTTL) {
+        console.log('executing query with key ' + key + ' age ' + ageSeconds + ' > ' + this.CacheTTL);
+        updateCache = true
+      } else {
+        const rows = entry[1];
+        console.log('using cached entry for key ' + key + ', aged ' + ageSeconds + 's');
+        return response.status(200).send(rows);
+      }
+    }
+    if (updateCache) {
+      var rc = this.queriesResultCache;
+      this.sf.showFlakeConnection.execute({
+        sqlText: query,
+        binds: binds,
+        // rows: IContributorLeaderboard[] | undefined
+        complete: function(err, _stmt, rows) {
+          if (err) {
+            console.log('query ' + key + ' status is error - not storing in cache');
+          } else {
+            rc.set(key, [Date.now(), rows]);
+          }
+          return response.status(err ? 400 : 200).send(err || rows);
+        }
+      });
+    }
+  }
+
   private getContributorLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
     const {segmentId, project, repository, timeRangeName, activityType, filterBots, orderBy, asc, limit, offset, developerMode} = request.body as IContributorLeaderboardParams;
     var repo = repository;
@@ -152,26 +216,7 @@ class SnowFlakeRouterClass {
     query += " limit ? offset ?";
     binds.push(lim)
     binds.push(off);
-    var dev = developerMode as string;
-    var devMode = this.isSet(dev);
-    var devModeAllowed = DeveloperMode.has(dev)
-    if (devMode && devModeAllowed) {
-      console.log('using developer ' + dev + ' models');
-      dev = "analytics_dev." + dev + "_"
-    } else {
-      if (devMode && !devModeAllowed) {
-        console.log('developer ' + dev + ' is not allowed, using analytics database (system wide) instead');
-      }
-      dev = "analytics."
-    }
-    query = query.split('{{db-schema}}').join(dev);
-    this.sf.showFlakeConnection.execute({
-      sqlText: query,
-      binds: binds,
-      complete: function(err, _stmt, rows: IContributorLeaderboard[] | undefined) {
-        return response.status(err ? 400 : 200).send(err || rows);
-      }
-    });
+    this.runQuery(query, binds, developerMode, response);
   };
 }
 
