@@ -1,5 +1,5 @@
 import { Connection, ConnectionOptions, createConnection, createPool } from 'snowflake-sdk';
-import { BasicClass } from '../core/BasicClass';
+import { BasicClass } from '@core/BasicClass';
 import { Options as PoolOptions, Pool } from 'generic-pool';
 
 export class SnowFlakeClass extends BasicClass {

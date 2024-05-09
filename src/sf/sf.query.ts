@@ -1,5 +1,5 @@
-import { ITimeRangeName } from '../types/timeRanges.type';
-import { IActivityType } from '../types/activityTypes.type';
+import { ITimeRangeName } from '@type/timeRanges.type';
+import { IActivityType } from '@type/activityTypes.type';
 var fs = require('fs');
 
 export class SfQuery {

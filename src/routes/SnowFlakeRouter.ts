@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { ConnectionOptions } from 'snowflake-sdk';
-import { SnowFlakeClass } from '../sf/sf';
-import { SfQuery } from '../sf/sf.query';
-import { IContributorsTotalSf } from '../types/contributors.type';
-import { ITypeBusFactorParams, ITypeBusFactorSf } from '../types/typeBusFactor.type';
-import { IContributorLeaderboardParams, ContributorLeaderboardOrderColumns } from '../types/contributorLeaderboard.type';
-import { IOrganizationLeaderboardParams, OrganizationLeaderboardOrderColumns } from '../types/organizationLeaderboard.type';
-import { DeveloperMode, IDeveloperMode } from '../types/developerMode.type';
+import { SnowFlakeClass } from '@sf/sf';
+import { SfQuery } from '@sf/sf.query';
+import { IContributorsTotalSf } from '@type/contributors.type';
+import { ITypeBusFactorParams, ITypeBusFactorSf } from '@type/typeBusFactor.type';
+import { IContributorLeaderboardParams, ContributorLeaderboardOrderColumns } from '@type/contributorLeaderboard.type';
+import { IOrganizationLeaderboardParams, OrganizationLeaderboardOrderColumns } from '@type/organizationLeaderboard.type';
+import { DeveloperMode, IDeveloperMode } from '@type/developerMode.type';
 import { createHash } from 'node:crypto'
 
-import { CONFIG } from '../config';
+import { CONFIG } from '@root/config';
 
 class SnowFlakeRouterClass {
   public router: Router;
@@ -53,10 +53,13 @@ class SnowFlakeRouterClass {
   }
 
   private getContributorsCountersPool = async (request: Request, response: Response, _next: NextFunction) => {
+    debugger;
     const {project, granularity, dateRange} = request.body;
+    debugger;
     const query = SfQuery.getQuery(this.queriesMap, './src/sql/contributorsCounters.sql');
+    debugger;
     await this.sf.showFlakePoolConnection.use(async (clientConnection) => {
-      const statement = await clientConnection.execute({
+      const statement = clientConnection.execute({
         sqlText: query,
         binds: [granularity, 'all-repos-combined', false, project, dateRange[0], dateRange[1]],
         complete: (err, stmt, _rows) => {
