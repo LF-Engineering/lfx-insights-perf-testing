@@ -20,7 +20,7 @@ export default function () {
     req duration ${thresholdsLoadSingle.http_req_duration[0]}
     `,
     () => {
-      const response = http.post(`http://localhost:3004/api/sf/contributors_counters`, {
+      const response = http.post(`http://localhost:3004/api/sf/contributors_counters_pool`, {
         granularity: 'year',
         dateRange: [
           '2014-01-01T00:00:00.000',

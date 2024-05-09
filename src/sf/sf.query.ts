@@ -20,8 +20,10 @@ export class SfQuery {
           row_number,
           username,
           display_name,
-          logo_url,
+          logo_url, 
           cnt,
+          prev_cnt,
+          delta,
           percent,
           cumulative_percent
         from

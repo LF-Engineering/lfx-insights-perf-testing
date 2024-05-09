@@ -50,6 +50,8 @@ export class CubeQuery {
         'SnowTypeBusFactorView.display_name',
         'SnowTypeBusFactorView.logo_url',
         'SnowTypeBusFactorView.contributions',
+        'SnowTypeBusFactorView.prev_contributions',
+        'SnowTypeBusFactorView.delta',
         'SnowTypeBusFactorView.percent_contributions',
         'SnowTypeBusFactorView.cumulative_percent_contributions'
       ],
