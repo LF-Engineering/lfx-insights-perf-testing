@@ -125,14 +125,20 @@ class SnowFlakeRouterClass {
     }
   };
 
+  // is given value set? must be non empty, non null and not undefined
   private isSet(v) : boolean {
     return !(v === undefined || v === null || v == '');
   }
 
+  // calculate SHA-256 of string and return BASE64 encoded
   private sha(str: string) : string {
     return createHash('sha256').update(str).digest('base64');
   }
 
+  // run query with bind arguments
+  // optionally run on given developer's DBT models instead of prod ones
+  // prod ones are `analytics.` prefixed (`:schema.` -> `analytics.`)
+  // developer are `analytics_dev.developer_name_` prefixed (`:schema.` -> `analytics_dev.developer_name_`)
   private runQuery(query: string, binds: any, developerMode: IDeveloperMode, response: Response) {
     // Developer mode
     var dev = developerMode as string;
@@ -147,7 +153,7 @@ class SnowFlakeRouterClass {
       }
       dev = "analytics."
     }
-    query = query.split('{{db-schema}}').join(dev);
+    query = query.split(':schema.').join(dev);
     // Caching
     const key = this.sha(JSON.stringify({"q":query, "b":binds}));
     var updateCache = false;
@@ -185,85 +191,53 @@ class SnowFlakeRouterClass {
     }
   }
 
+  // handle `order by` part by adding a correct `order by column-name asc|desc` phrase in place of `:order` placeholder
+  private handleOrderBy(query: string, order: string, asc: boolean, allowedOrders: Set<string>, defaultOrder: string) : string {
+    if (!allowedOrders.has(order)) {
+      order = defaultOrder
+      console.log('unknown order by column ' + order + ', changed to ' + order);
+    }
+    var queryOrderBy = ' order by ' + order
+    if (asc) {
+      queryOrderBy += " asc";
+    } else {
+      queryOrderBy += " desc";
+    }
+    return query.split(':order').join(queryOrderBy);
+  }
+
   private getContributorLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
     const {segmentId, project, repository, timeRangeName, activityType, filterBots, orderBy, asc, limit, offset, developerMode} = request.body as IContributorLeaderboardParams;
-    var repo = repository;
-    if (repo == "") {
-      repo = "all-repos-combined";
-    }
-    var order = orderBy;
-    if (!ContributorLeaderboardOrderColumns.has(order)) {
-      order = 'row_number';
-      console.log('unknown order by column ' + orderBy + ', changed to ' + order);
-    }
-    var lim = limit;
-    if (lim <= 0) {
-      lim = 1000;
-    }
-    var off = offset;
-    if (off < 0) {
-      off = 0;
-    }
-    var binds:(string | number)[] = [repo, timeRangeName, activityType, filterBots];
     var query = SfQuery.getQuery(this.queriesMap, './src/sql/contributorLeaderboard.sql');
-    if (this.isSet(segmentId)) {
-      query += ' and segment_id = ?'
-      binds.push(segmentId);
-    }
-    if (this.isSet(project)) {
-      query += ' and project_slug = ?'
-      binds.push(project);
-    }
-    query += ' order by ' + order
-    if (asc) {
-      query += " asc";
-    } else {
-      query += " desc";
-    }
-    query += " limit ? offset ?";
-    binds.push(lim)
-    binds.push(off);
+    query = this.handleOrderBy(query, orderBy, asc, ContributorLeaderboardOrderColumns, 'row_number');
+    // only numbered binds parameters are supported (no named parameters): so we bind to :1, :2, ..., :N the same as in .sql file
+    var binds:(string | number)[] = [
+      (this.isSet(segmentId)) ? segmentId : '',               // :1
+      (this.isSet(project)) ? project : '',                   // :2
+      (repository == "") ? 'all-repos-combined' : repository, // :3
+      timeRangeName,                                          // :4
+      activityType,                                           // :5
+      filterBots,                                             // :6
+      (limit <= 0) ? 1000 : limit,                            // :7
+      (offset < 0) ? 0 : offset,                              // :8
+    ];
     this.runQuery(query, binds, developerMode, response);
   };
 
   private getOrganizationLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
     const {segmentId, project, repository, timeRangeName, activityType, orderBy, asc, limit, offset, developerMode} = request.body as IOrganizationLeaderboardParams;
-    var repo = repository;
-    if (repo == "") {
-      repo = "all-repos-combined";
-    }
-    var order = orderBy;
-    if (!OrganizationLeaderboardOrderColumns.has(order)) {
-      order = 'row_number_by_contributions';
-      console.log('unknown order by column ' + orderBy + ', changed to ' + order);
-    }
-    var lim = limit;
-    if (lim <= 0) {
-      lim = 1000;
-    }
-    var off = offset;
-    if (off < 0) {
-      off = 0;
-    }
-    var binds:(string | number)[] = [repo, timeRangeName, activityType];
     var query = SfQuery.getQuery(this.queriesMap, './src/sql/organizationLeaderboard.sql');
-    if (this.isSet(segmentId)) {
-      query += ' and segment_id = ?'
-      binds.push(segmentId);
-    }
-    if (this.isSet(project)) {
-      query += ' and project_slug = ?'
-      binds.push(project);
-    }
-    query += ' order by ' + order
-    if (asc) {
-      query += " asc";
-    } else {
-      query += " desc";
-    }
-    query += " limit ? offset ?";
-    binds.push(lim)
-    binds.push(off);
+    query = this.handleOrderBy(query, orderBy, asc, OrganizationLeaderboardOrderColumns, 'row_number_by_contributions');
+    // only numbered binds parameters are supported (no named parameters): so we bind to :1, :2, ..., :N the same as in .sql file
+    var binds:(string | number)[] = [
+      (this.isSet(segmentId)) ? segmentId : '',               // :1
+      (this.isSet(project)) ? project : '',                   // :2
+      (repository == "") ? 'all-repos-combined' : repository, // :3
+      timeRangeName,                                          // :4
+      activityType,                                           // :5
+      (limit <= 0) ? 1000 : limit,                            // :6
+      (offset < 0) ? 0 : offset,                              // :7
+    ];
     this.runQuery(query, binds, developerMode, response);
   };
 
@@ -276,6 +250,7 @@ class SnowFlakeRouterClass {
       str += i + ") '" + data[0] + "' length= " + data[1].length + ":\n";
       str += data[1] + "\n";
     }
+    i = 0;
     str += 'cached SQL queries: ' + this.queriesResultCache.size + "\n";
     for (let data of this.queriesResultCache) {
       i++;

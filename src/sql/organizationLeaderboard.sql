@@ -34,8 +34,13 @@ select
     project_slug,
     project_group_slug
 from
-  {{db-schema}}platinum_insights.organization_leaderboard
+  :schema.platinum_insights.organization_leaderboard
 where
-  repository_url = ?
-  and time_range_name = ?
-  and type = ?
+  (segment_id = :1 or '' = :1)
+  and (project_slug = :2 or '' = :2)
+  and repository_url = :3
+  and time_range_name = :4
+  and type = :5
+:order
+  limit :6
+  offset :7
