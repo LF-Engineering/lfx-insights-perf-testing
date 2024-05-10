@@ -156,39 +156,33 @@ class SnowFlakeRouterClass {
     query = query.split(':schema.').join(dev);
     // Caching
     const key = this.sha(JSON.stringify({"q":query, "b":binds}));
-    var updateCache = false;
     if (!this.queriesResultCache.has(key)) {
       console.log('first time executing query with key ' + key);
-      updateCache = true;
     } else {
       const entry = this.queriesResultCache.get(key);
       const ageSeconds = (Date.now() - entry[0]) / 1000;
-      if (ageSeconds > this.CacheTTL) {
-        console.log('executing query with key ' + key + ' age ' + ageSeconds + ' > ' + this.CacheTTL);
-        updateCache = true
-      } else {
+      if (ageSeconds < this.CacheTTL) {
         const rows = entry[1];
         console.log('using cached entry for key ' + key + ', aged ' + ageSeconds + 's');
         return response.status(200).send(rows);
       }
+      console.log('executing query with key ' + key + ' age ' + ageSeconds + ' >= ' + this.CacheTTL);
     }
-    if (updateCache) {
-      var rc = this.queriesResultCache;
-      this.sf.showFlakeConnection.execute({
-        sqlText: query,
-        binds: binds,
-        complete: function(err, stmt, rows) {
-          console.log('exectued with bound parameters: ' + binds);
-          console.log(stmt.getSqlText());
-          if (err) {
-            console.log('query ' + key + ' status is error - not storing in cache');
-          } else {
-            rc.set(key, [Date.now(), rows]);
-          }
-          return response.status(err ? 400 : 200).send(err || rows);
+    var rc = this.queriesResultCache;
+    this.sf.showFlakeConnection.execute({
+      sqlText: query,
+      binds: binds,
+      complete: function(err, stmt, rows) {
+        console.log('exectued with bound parameters: ' + binds);
+        console.log(stmt.getSqlText());
+        if (err) {
+          console.log('query ' + key + ' status is error - not storing in cache');
+        } else {
+          rc.set(key, [Date.now(), rows]);
         }
-      });
-    }
+        return response.status(err ? 400 : 200).send(err || rows);
+      }
+    });
   }
 
   // handle `order by` part by adding a correct `order by column-name asc|desc` phrase in place of `:order` placeholder
