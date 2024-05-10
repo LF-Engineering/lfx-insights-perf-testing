@@ -173,6 +173,7 @@ class SnowFlakeRouterClass {
       sqlText: query,
       binds: binds,
       complete: function(err, stmt, rows) {
+        // here we can see actual query that was executed + bound parameters
         console.log('exectued with bound parameters: ' + binds);
         console.log(stmt.getSqlText());
         if (err) {
@@ -208,7 +209,7 @@ class SnowFlakeRouterClass {
     var binds:(string | number)[] = [
       (this.isSet(segmentId)) ? segmentId : '',               // :1
       (this.isSet(project)) ? project : '',                   // :2
-      (repository == "") ? 'all-repos-combined' : repository, // :3
+      (repository == '') ? 'all-repos-combined' : repository, // :3
       timeRangeName,                                          // :4
       activityType,                                           // :5
       filterBots,                                             // :6
@@ -226,7 +227,7 @@ class SnowFlakeRouterClass {
     var binds:(string | number)[] = [
       (this.isSet(segmentId)) ? segmentId : '',               // :1
       (this.isSet(project)) ? project : '',                   // :2
-      (repository == "") ? 'all-repos-combined' : repository, // :3
+      (repository == '') ? 'all-repos-combined' : repository, // :3
       timeRangeName,                                          // :4
       activityType,                                           // :5
       (limit <= 0) ? 1000 : limit,                            // :6
