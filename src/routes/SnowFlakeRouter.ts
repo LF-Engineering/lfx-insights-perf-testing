@@ -53,11 +53,8 @@ class SnowFlakeRouterClass {
   }
 
   private getContributorsCountersPool = async (request: Request, response: Response, _next: NextFunction) => {
-    debugger;
     const {project, granularity, dateRange} = request.body;
-    debugger;
     const query = SfQuery.getQuery(this.queriesMap, './src/sql/contributorsCounters.sql');
-    debugger;
     await this.sf.showFlakePoolConnection.use(async (clientConnection) => {
       const statement = clientConnection.execute({
         sqlText: query,

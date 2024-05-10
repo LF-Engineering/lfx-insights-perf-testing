@@ -20,6 +20,16 @@ export const CONFIG = {
   },
   API: {
     BASE_URL: 'http://localhost:3004/api',
+    ROUTES: {
+      CONTRIBUTORS: {
+        BASE: '/contributors',
+        ENDPOINTS: {
+          COUNTERS: '/counters',
+          COUNTERS_POOL: '/counters-pool',
+          LEADERBOARD: '/leaderboard',
+        },
+      },
+    },
     ENDPOINTS: {
       CONTRIBUTORS_COUNTERS: '/contributors_counters',
       CONTRIBUTORS_COUNTERS_POOL: '/contributors_counters_pool',
