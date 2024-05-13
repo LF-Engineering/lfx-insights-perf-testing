@@ -12,6 +12,11 @@ export const CONFIG = {
     POOL_OPTIONS: {
       max: 10,
       min: 10
+    },
+    CACHING: {
+      SQL_QUERY: true,
+      SQL_RESULT: true,
+      TTL: 28800 // 8 hours
     }
   },
   CUBE: {
@@ -24,8 +29,6 @@ export const CONFIG = {
       CONTRIBUTORS: {
         BASE: '/contributors',
         ENDPOINTS: {
-          COUNTERS: '/counters',
-          COUNTERS_POOL: '/counters-pool',
           LEADERBOARD: '/leaderboard',
         },
       },

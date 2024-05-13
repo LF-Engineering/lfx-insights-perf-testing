@@ -4,24 +4,26 @@ import { SnowFlakeClass } from '@sf/sf';
 import { SfQuery } from '@sf/sf.query';
 import { IContributorsTotalSf } from '@type/contributors.type';
 import { ITypeBusFactorParams, ITypeBusFactorSf } from '@type/typeBusFactor.type';
-import { IContributorLeaderboardParams, ContributorLeaderboardOrderColumns } from '@type/contributorLeaderboard.type';
+import { IContributorLeaderboardParams, contributorLeaderboardOrderColumns } from '@type/contributorLeaderboard.type';
 import { IOrganizationLeaderboardParams, OrganizationLeaderboardOrderColumns } from '@type/organizationLeaderboard.type';
 import { DeveloperMode, IDeveloperMode } from '@type/developerMode.type';
 import { createHash } from 'node:crypto'
 
 import { CONFIG } from '@root/config';
+import { SnowFlakeContributorsRouterClass } from '@routes/snow-flake/contributors/SnowFlakeContributors.router';
 
 class SnowFlakeRouterClass {
   public router: Router;
   private sf: SnowFlakeClass;
   // TODO: Alex pls see 'statementsInit' function TODO:
+
   private queriesMap: Map<string, string>;
-  private queriesResultCache: Map<string, [number, any]>;
+  private queriesResultCache: Map<string, any[]>;
   private CacheTTL: number;
   constructor() {
     this.sfInit();
-    this.routerInit();
     this.statementsInit();
+    this.routerInit();
   }
   private sfInit() {
     this.sf = new SnowFlakeClass(CONFIG.SF.CONNECT as ConnectionOptions, CONFIG.SF.POOL_OPTIONS);
@@ -31,6 +33,10 @@ class SnowFlakeRouterClass {
   }
   private routerInit() {
     this.router = Router();
+
+    const SnowFlakeContributorsRouter = new SnowFlakeContributorsRouterClass(this.sf, this.queriesMap, this.queriesResultCache);
+    this.router.use(CONFIG.API.ROUTES.CONTRIBUTORS.BASE, SnowFlakeContributorsRouter.router);
+
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS, this.getContributorsCountersDirect);
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS_POOL, this.getContributorsCountersPool);
     this.router.post(CONFIG.API.ENDPOINTS.TYPE_BUS_FACTOR, this.getTypeBusFactorDirect);
@@ -140,7 +146,7 @@ class SnowFlakeRouterClass {
     // Developer mode
     var dev = developerMode as string;
     var devMode = this.isSet(dev);
-    var devModeAllowed = DeveloperMode.has(dev)
+    var devModeAllowed = DeveloperMode.has(dev as any)
     if (devMode && devModeAllowed) {
       console.log('using developer ' + dev + ' models');
       dev = "analytics_dev." + dev + "_"
@@ -201,7 +207,7 @@ class SnowFlakeRouterClass {
   private getContributorLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
     const {segmentId, project, repository, timeRangeName, activityType, filterBots, orderBy, asc, limit, offset, developerMode} = request.body as IContributorLeaderboardParams;
     var query = SfQuery.getQuery(this.queriesMap, './src/sql/contributorLeaderboard.sql');
-    query = this.handleOrderBy(query, orderBy, asc, ContributorLeaderboardOrderColumns, 'row_number');
+    query = this.handleOrderBy(query, orderBy, asc, contributorLeaderboardOrderColumns, 'row_number');
     // only numbered binds parameters are supported (no named parameters): so we bind to :1, :2, ..., :N the same as in .sql file
     var binds:(string | number)[] = [
       (this.isSet(segmentId)) ? segmentId : '',               // :1
