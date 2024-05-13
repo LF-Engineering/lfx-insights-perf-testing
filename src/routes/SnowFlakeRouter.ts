@@ -5,12 +5,15 @@ import { SfQuery } from '@sf/sf.query';
 import { IContributorsTotalSf } from '@type/contributors.type';
 import { ITypeBusFactorParams, ITypeBusFactorSf } from '@type/typeBusFactor.type';
 import { IContributorLeaderboardParams, contributorLeaderboardOrderColumns } from '@type/contributorLeaderboard.type';
-import { IOrganizationLeaderboardParams, OrganizationLeaderboardOrderColumns } from '@type/organizationLeaderboard.type';
+import {
+  IOrganizationLeaderboardParams, organizationLeaderboardOrderColumns,
+} from '@type/organizationLeaderboard.type';
 import { DeveloperMode, IDeveloperMode } from '@type/developerMode.type';
 import { createHash } from 'node:crypto'
+import { SnowFlakeContributorsRouterClass } from '@routes/snow-flake/contributors/SnowFlakeContributors.router';
+import { SnowFlakeOrganizationsRouterClass } from '@routes/snow-flake/organizations/SnowFlakeOrganizations.router';
 
 import { CONFIG } from '@root/config';
-import { SnowFlakeContributorsRouterClass } from '@routes/snow-flake/contributors/SnowFlakeContributors.router';
 
 class SnowFlakeRouterClass {
   public router: Router;
@@ -35,7 +38,9 @@ class SnowFlakeRouterClass {
     this.router = Router();
 
     const SnowFlakeContributorsRouter = new SnowFlakeContributorsRouterClass(this.sf, this.queriesMap, this.queriesResultCache);
+    const SnowFlakeOrganizationsRouter = new SnowFlakeOrganizationsRouterClass(this.sf, this.queriesMap, this.queriesResultCache);
     this.router.use(CONFIG.API.ROUTES.CONTRIBUTORS.BASE, SnowFlakeContributorsRouter.router);
+    this.router.use(CONFIG.API.ROUTES.ORGANIZATIONS.BASE, SnowFlakeOrganizationsRouter.router);
 
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS, this.getContributorsCountersDirect);
     this.router.post(CONFIG.API.ENDPOINTS.CONTRIBUTORS_COUNTERS_POOL, this.getContributorsCountersPool);
@@ -225,7 +230,7 @@ class SnowFlakeRouterClass {
   private getOrganizationLeaderboard = async (request: Request, response: Response, _next: NextFunction) => {
     const {segmentId, project, repository, timeRangeName, activityType, orderBy, asc, limit, offset, developerMode} = request.body as IOrganizationLeaderboardParams;
     var query = SfQuery.getQuery(this.queriesMap, './src/sql/organizationLeaderboard.sql');
-    query = this.handleOrderBy(query, orderBy, asc, OrganizationLeaderboardOrderColumns, 'row_number_by_contributions');
+    query = this.handleOrderBy(query, orderBy, asc, organizationLeaderboardOrderColumns, 'row_number_by_contributions');
     // only numbered binds parameters are supported (no named parameters): so we bind to :1, :2, ..., :N the same as in .sql file
     var binds:(string | number)[] = [
       (this.isSet(segmentId)) ? segmentId : '',               // :1

@@ -32,6 +32,12 @@ export const CONFIG = {
           LEADERBOARD: '/leaderboard',
         },
       },
+      ORGANIZATIONS: {
+        BASE: '/organizations',
+        ENDPOINTS: {
+          LEADERBOARD: '/leaderboard',
+        },
+      },
     },
     ENDPOINTS: {
       CONTRIBUTORS_COUNTERS: '/contributors_counters',
