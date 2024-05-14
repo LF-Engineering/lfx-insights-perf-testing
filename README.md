@@ -171,6 +171,8 @@ k6 cloud dist/contributorsCountersSfCase3.load.spec.js
 - Start server via: `` ./scripts/server.sh ``. Or manually changing to another developer (othe rthan define din `*.secret files): `` SF_USERNAME=lf_lukasz SF_PASS=[redacted] SF_WAREHOUSE=DBT_INSIGHTS_DEV ./scripts/server.sh ``.
 - Call example API via: `` ./scripts/api-contributors-leaderboard.sh ``.
 - Call example API via: `` ./scripts/api-organizations-leaderboard.sh ``.
+- Call example API via: `` ./scripts/api-contributors-bus-factorsh ``.
+- Call example API via: `` ./scripts/api-organizations-elephant-factor.sh ``.
 - Call example API via: `` ./scripts/api-cache-stats.sh ``.
 
 

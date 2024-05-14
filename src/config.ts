@@ -30,12 +30,14 @@ export const CONFIG = {
         BASE: '/contributors',
         ENDPOINTS: {
           LEADERBOARD: '/leaderboard',
+          BUS_FACTOR: '/bus-factor',
         },
       },
       ORGANIZATIONS: {
         BASE: '/organizations',
         ENDPOINTS: {
           LEADERBOARD: '/leaderboard',
+          ELEPHANT_FACTOR: '/elephant-factor',
         },
       },
     },
