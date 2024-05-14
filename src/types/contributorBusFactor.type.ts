@@ -2,29 +2,27 @@ import { ITimeRangeName } from '@type/timeRanges.type';
 import { IActivityType } from '@type/activityTypes.type';
 import { IDeveloperMode } from '@type/developerMode.type';
 
-export interface IContributorLeaderboard {
+export interface IContributorBusFactor {
   TIME_RANGE_NAME: string;
+  TIME_RANGE_FROM: Date;
+  TIME_RANGE_TO: Date;
   TYPE: string;
-  IS_BOT: boolean;
-  FILTER_BOTS: boolean;
   SEGMENT_ID: string;
   REPOSITORY_URL: string;
   MEMBER_ID: string
   PLATFORM: string;
   USERNAME: string;
   ROW_NUMBER: number;
-  CONTRIBUTIONS: number;
-  PREV_CONTRIBUTIONS: number;
-  ALL_CONTRIBUTIONS: number;
-  PERCENT_TOTAL: number;
+  CNT: number;
+  PREV_CNT: number;
+  DELTA: number;
+  PERCENT: number;
+  CUMULATIVE_PERCENT: number;
   CHANGE_FROM_PREVIOUS: number;
-  ALL_CONTRIBUTORS: number;
-  ALL_PREV_CONTRIBUTORS: number;
-  ALL_PREV_CONTRIBUTIONS: number;
-  ALL_CHANGE_FROM_PREVIOUS: number;
-  DELTA_CONTRIBUTIONS: number;
-  DELTA_ALL_CONTRIBUTIONS: number;
-  DELTA_ALL_CONTRIBUTORS: number;
+  BUS_FACTOR: number;
+  MIN_PERCENT: number;
+  OTHERS_COUNT: number;
+  OTHERS_PERCENT: number;
   JOINED_AT: Date;
   DISPLAY_NAME: string;
   LOGO_URL: string;
@@ -32,56 +30,61 @@ export interface IContributorLeaderboard {
   SUBPROJECT_SLUG: string;
   PROJECT_SLUG: string;
   PROJECT_GROUP_SLUG: string;
+  SUBPROJECT_NAME: string;
+  PROJECT_NAME: string;
+  PROJECT_GROUP_NAME: string;
 }
 
-export interface IContributorLeaderboardParams {
+export interface IContributorBusFactorParams {
   timeRangeName: ITimeRangeName;
   activityType: IActivityType;
   segmentId: string;
   project: string;
   repository: string;
-  filterBots: number;
-  orderBy: IContributorLeaderboardOrderColumns;
+  orderBy: IContributorBusFactorOrderColumns;
   asc: boolean;
   limit: number;
   offset: number;
   developerMode: IDeveloperMode;
 }
 
-export type IContributorLeaderboardOrderColumns =
-  'is_bot'
-  | 'segment_id'
+export type IContributorBusFactorOrderColumns =
+  'segment_id'
   | 'repository_url'
   | 'member_id'
   | 'platform'
   | 'username'
   | 'row_number'
-  | 'contributions'
-  | 'prev_contributions'
-  | 'percent_total'
+  | 'cnt'
+  | 'prev_cnt'
+  | 'delta'
+  | 'percent'
+  | 'cumulative_percent'
   | 'change_from_previous'
-  | 'delta_contributions'
   | 'joined_at'
   | 'display_name'
   | 'logo_url'
   | 'country'
   | 'subproject_slug'
   | 'project_slug'
-  | 'project_group_slug';
+  | 'project_group_slug'
+  | 'subproject_name'
+  | 'project_name'
+  | 'project_group_name';
 
-export const contributorLeaderboardOrderColumns = new Set<IContributorLeaderboardOrderColumns>([
-  'is_bot',
+export const contributorBusFactorOrderColumns = new Set<IContributorBusFactorOrderColumns>([
   'segment_id',
   'repository_url',
   'member_id',
   'platform',
   'username',
   'row_number',
-  'contributions',
-  'prev_contributions',
-  'percent_total',
+  'cnt',
+  'prev_cnt',
+  'delta',
+  'percent',
+  'cumulative_percent',
   'change_from_previous',
-  'delta_contributions',
   'joined_at',
   'display_name',
   'logo_url',
@@ -89,4 +92,7 @@ export const contributorLeaderboardOrderColumns = new Set<IContributorLeaderboar
   'subproject_slug',
   'project_slug',
   'project_group_slug',
+  'subproject_name',
+  'project_name',
+  'project_group_name',
 ]);

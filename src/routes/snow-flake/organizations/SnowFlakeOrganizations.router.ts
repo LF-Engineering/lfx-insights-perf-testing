@@ -7,7 +7,9 @@ import { DeveloperMode } from '@type/developerMode.type';
 import {
   IOrganizationLeaderboard, IOrganizationLeaderboardParams, organizationLeaderboardOrderColumns
 } from '@type/organizationLeaderboard.type';
-
+import {
+  IOrganizationElephantFactor, IOrganizationElephantFactorParams, organizationElephantFactorOrderColumns
+} from '@type/organizationElephantFactor.type';
 import { CONFIG } from '@root/config';
 
 export class SnowFlakeOrganizationsRouterClass extends BasicRouter {
@@ -19,9 +21,10 @@ export class SnowFlakeOrganizationsRouterClass extends BasicRouter {
   }
 
   private routerInit() {
-    const { LEADERBOARD } = CONFIG.API.ROUTES.ORGANIZATIONS.ENDPOINTS
+    const { LEADERBOARD, ELEPHANT_FACTOR } = CONFIG.API.ROUTES.ORGANIZATIONS.ENDPOINTS
     this.router = Router();
     this.router.post(LEADERBOARD, this.getOrganizationsLeaderboard);
+    this.router.post(ELEPHANT_FACTOR, this.getOrganizationsElephantFactor);
   }
 
   private getOrganizationsLeaderboard = async (
@@ -60,6 +63,49 @@ export class SnowFlakeOrganizationsRouterClass extends BasicRouter {
         (offset < 0) ? 0 : offset,                              // :7
       ];
       this.executeQuery<IOrganizationLeaderboard>(sqlText, binds, (err, _stmt, rows) => {
+        return response.status(err ? 400 : 200).send(err || rows);
+      });
+    } catch (e) {
+      return response.status(400).send(e);
+    }
+  };
+
+  private getOrganizationsElephantFactor = async (
+    request: Request<{}, {}, IOrganizationElephantFactorParams>,
+    response: Response,
+    _next: NextFunction
+  ) => {
+    try {
+      const {
+        segmentId,
+        project,
+        repository,
+        timeRangeName,
+        activityType,
+        orderBy,
+        asc,
+        limit,
+        offset,
+        developerMode
+      } = request.body;
+      const sqlText = await this.getQueryAsync(
+        'organizationElephantFactor.sql',
+        {
+          order: organizationElephantFactorOrderColumns.has(orderBy) ? orderBy : 'row_number',
+          asc: asc ? AscEnum.ASC : AscEnum.DESC,
+          schema: DeveloperMode.has(developerMode) ? `analytics_dev.${developerMode}_` : 'analytics.'
+        }
+      );
+      const binds: (string | number)[] = [
+        (CommonService.isSet(segmentId)) ? segmentId : '',      // :1
+        (CommonService.isSet(project)) ? project : '',          // :2
+        (repository == '') ? 'all-repos-combined' : repository, // :3
+        timeRangeName,                                          // :4
+        activityType,                                           // :5
+        (limit <= 0) ? 1000 : limit,                            // :6
+        (offset < 0) ? 0 : offset,                              // :7
+      ];
+      this.executeQuery<IOrganizationElephantFactor>(sqlText, binds, (err, _stmt, rows) => {
         return response.status(err ? 400 : 200).send(err || rows);
       });
     } catch (e) {
