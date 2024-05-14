@@ -1,3 +1,6 @@
+import { ITimeRangeName } from '@type/timeRanges.type';
+import { IActivityType } from '@type/activityTypes.type';
+
 export interface ITypeBusFactorSf {
   ROW_NUMBER: number;
   USERNAME: string;
@@ -9,13 +12,7 @@ export interface ITypeBusFactorSf {
 }
 
 export interface ITypeBusFactorParams {
-  timeRangeName: ITypeBusFactorTimeRangeName;
-  type: ITypeBusFactorType;
+  timeRangeName: ITimeRangeName;
+  type: IActivityType;
   project: string;
 }
-
-export type ITypeBusFactorTimeRangeName =
-  '7d'| '30d' | '90d' | '12m' | 'q' | 'ty' | 'y' | '2y' | 'a' | '7dp' | '30dp' | '90dp' | '12mp' | 'qp' | 'typ' | 'yp' | '2yp';
-
-export type ITypeBusFactorType =
-  'changeset-abandoned' | 'changeset-created' | 'changeset-merged' | 'commits' | 'contributions' | 'gerrit_comments' | 'issues-closed' | 'issues-opened' | 'pr_comments' | 'pull_request-closed' | 'pull_request-merged' | 'pull_request-opened' | 'pull_request-reviewed';

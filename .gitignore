@@ -2,3 +2,7 @@ node_modules/
 .idea
 .env
 dist
+*.secret
+out
+*.log
+*.swp

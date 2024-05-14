@@ -1,14 +1,23 @@
 {
   "compilerOptions": {
+    "target": "ES2022",
     "baseUrl": "src",
     "paths": {
-      "@routes/*": ["routes/*"]
+      "@root/*": ["*"],
+      "@routes/*": ["routes/*"],
+      "@sql/*": ["sql/*"],
+      "@sf/*": ["sf/*"],
+      "@cube/*": ["cube/*"],
+      "@type/*": ["types/*"],
+      "@core/*": ["core/*"],
+      "@k6/*": ["k6/*"]
     },
     "types": [
       "node"
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "moduleResolution": "node"
   }
 }

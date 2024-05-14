@@ -3,9 +3,9 @@ import cors from 'cors';
 import express from 'express';
 import { createServer, Server } from 'http';
 import logger from 'morgan';
-import { cubeRouter } from '@routes/CubeRouter';
+import { cubeRouter } from '@routes/Cube.router';
 import { sfRouter } from '@routes/SnowFlakeRouter';
-import { dummyRouter } from '@routes/DummyRouter';
+import { dummyRouter } from '@routes/Dummy.router';
 
 export class MockApiServer {
   public static readonly DELAYMS: number = 0;
