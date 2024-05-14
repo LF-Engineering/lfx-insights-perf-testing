@@ -4,6 +4,7 @@ import { CommonService } from '@root/services/common.service';
 import { SnowFlakeClass } from '@sf/sf';
 import { SnowflakeError, Statement } from 'snowflake-sdk';
 import { CONFIG } from '@root/config';
+import { createHash } from 'node:crypto'
 
 export class BasicRouter {
   readonly sf: SnowFlakeClass;
@@ -44,6 +45,10 @@ export class BasicRouter {
     });
   }
 
+  private sha(str: string) : string {
+    return createHash('sha256').update(str).digest('base64');
+  }
+
   protected executeQuery<T extends object>(
     sqlText: string,
     binds: (string | number)[],
@@ -51,10 +56,40 @@ export class BasicRouter {
     isCacheEnabled: boolean = CONFIG.SF.CACHING.SQL_RESULT
   ) {
     // Caching will be done in ValKey
+    if (!isCacheEnabled) {
+      return this.sf.showFlakeConnection.execute({
+        sqlText,
+        binds,
+        complete
+      });
+    }
+    const key = this.sha(JSON.stringify({"q":sqlText, "b":binds}));
+    if (this.queriesResultCache.has(key)) {
+      const entry = this.queriesResultCache.get(key);
+      const ageSeconds = (Date.now() - entry[0]) / 1000;
+      if (ageSeconds < CONFIG.SF.CACHING.TTL) {
+        const rows = entry[1];
+        console.log('using cached entry for key ' + key + ', aged ' + ageSeconds + 's');
+        return complete(null, null, rows);
+      }
+      console.log('executing query with key ' + key + ' age ' + ageSeconds + ' >= ' + CONFIG.SF.CACHING.TTL);
+    } else {
+      console.log('first time executing query with key ' + key);
+    }
+    var rc = this.queriesResultCache;
     this.sf.showFlakeConnection.execute({
       sqlText,
       binds,
-      complete
+      complete: function(err, stmt, rows) {
+        console.log('exectued with bound parameters: ' + binds);
+        console.log(stmt.getSqlText());
+        if (err) {
+          console.log('query ' + key + ' status is error - not storing in cache');
+        } else {
+          rc.set(key, [Date.now(), rows]);
+        }
+        complete(err, stmt, rows);
+      }
     });
   }
 

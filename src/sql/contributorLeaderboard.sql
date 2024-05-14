@@ -29,7 +29,7 @@ select
   project_slug,
   project_group_slug
 from
-  :schema.platinum_insights.contributor_leaderboard
+  $$schema$$platinum_insights.contributor_leaderboard
 where
   (segment_id = :1 or '' = :1)
   and (project_slug = :2 or '' = :2)
@@ -37,6 +37,6 @@ where
   and time_range_name = :4
   and type = :5
   and filter_bots = :6
-:order
+order by $$order$$ $$asc$$
   limit :7
   offset :8

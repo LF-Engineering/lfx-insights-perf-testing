@@ -43,7 +43,7 @@ export class SnowFlakeOrganizationsRouterClass extends BasicRouter {
         developerMode
       } = request.body;
       const sqlText = await this.getQueryAsync(
-        'organizationLeaderboard_.sql',
+        'organizationLeaderboard.sql',
         {
           order: organizationLeaderboardOrderColumns.has(orderBy) ? orderBy : 'row_number_by_contributions',
           asc: asc ? AscEnum.ASC : AscEnum.DESC,
