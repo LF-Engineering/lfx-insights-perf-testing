@@ -14,9 +14,9 @@ export const CONFIG = {
       min: 10
     },
     CACHING: {
-      SQL_QUERY: true,
-      SQL_RESULT: true,
-      TTL: 28800 // 8 hours
+      SQL_QUERY: true,    // Cache *.sql pre-compiled statements query files
+      SQL_RESULT: true,   // Cache query results for TTL seconds - using query's SHA256 hash BASE64 encoded as a key
+      TTL: 28800          // 8 hours
     }
   },
   CUBE: {
@@ -44,9 +44,7 @@ export const CONFIG = {
       CONTRIBUTORS_COUNTERS_POOL: '/contributors_counters_pool',
       TYPE_BUS_FACTOR: '/type_bus_factor',
       TYPE_BUS_FACTOR_POOL: '/type_bus_factor_pool',
-      // TODO: add real SF API candidates (to be moved to a swagger repo) starting here:
-      CONTRIBUTOR_LEADERBOARD: '/contributor-leaderboard',
-      ORGANIZATION_LEADERBOARD: '/organization-leaderboard',
+      // Cache statistics API
       CACHE_STATS: '/cache-stats',
     }
   },

@@ -4,7 +4,6 @@ import { CommonService } from '@root/services/common.service';
 import { SnowFlakeClass } from '@sf/sf';
 import { SnowflakeError, Statement } from 'snowflake-sdk';
 import { CONFIG } from '@root/config';
-import { createHash } from 'node:crypto'
 
 export class BasicRouter {
   readonly sf: SnowFlakeClass;
@@ -45,10 +44,6 @@ export class BasicRouter {
     });
   }
 
-  private sha(str: string) : string {
-    return createHash('sha256').update(str).digest('base64');
-  }
-
   protected executeQuery<T extends object>(
     sqlText: string,
     binds: (string | number)[],
@@ -63,14 +58,18 @@ export class BasicRouter {
         complete
       });
     }
-    const key = this.sha(JSON.stringify({"q":sqlText, "b":binds}));
+    // This is implementation that uses memory caching by query's SHA-256 hash BASE64 encoded as a caching key for 8 hours
+    // Please only remove this by changing to use ValKey - keep it there till ValKey caching implementation is provided to replace this
+    // This saves us from expensive SF calls
+    const key = CommonService.sha(JSON.stringify({"q":sqlText, "b":binds}));
     if (this.queriesResultCache.has(key)) {
       const entry = this.queriesResultCache.get(key);
       const ageSeconds = (Date.now() - entry[0]) / 1000;
       if (ageSeconds < CONFIG.SF.CACHING.TTL) {
         const rows = entry[1];
         console.log('using cached entry for key ' + key + ', aged ' + ageSeconds + 's');
-        return complete(null, null, rows);
+        complete(null, null, rows);
+        return;
       }
       console.log('executing query with key ' + key + ' age ' + ageSeconds + ' >= ' + CONFIG.SF.CACHING.TTL);
     } else {
